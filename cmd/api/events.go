@@ -8,6 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateEvent creates a new event
+//
+//	@Summary		Creates a new event
+//	@Description	Creates a new event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			event	body		database.Event	true	"Event"
+//	@Success		201		{object}	database.Event
+//	@Router			/api/v1/events [post]
+//	@Security		BearerAuth
 func (app *application) createEvent(c *gin.Context) {
 	var event database.Event
 
@@ -27,6 +38,16 @@ func (app *application) createEvent(c *gin.Context) {
 	c.JSON(http.StatusCreated, event)
 }
 
+
+// GetEvents returns all events
+//
+//	@Summary		Returns all events
+//	@Description	Returns all events
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Success		200		{object}	[]database.Event
+//	@Router			/api/v1/events [get]
 func (app *application) getAllEvents(c *gin.Context) {
 	events, err := app.models.Events.GetAll()
 
@@ -37,6 +58,16 @@ func (app *application) getAllEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
+// GetEvent returns a single event
+//
+//	@Summary		Returns a single event
+//	@Description	Returns a single event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Success		200	{object}	database.Event
+//	@Router			/api/v1/events/{id} [get]
 func (app *application) getEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -58,6 +89,18 @@ func (app *application) getEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
+// UpdateEvent updates an existing event
+//
+//	@Summary		Updates an existing event
+//	@Description	Updates an existing event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Param			event	body		database.Event	true	"Event"
+//	@Success		200	{object}	database.Event
+//	@Router			/api/v1/events/{id} [put]
+//	@Security		BearerAuth
 func (app *application) updateEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -100,6 +143,17 @@ func (app *application) updateEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedEvent)
 }
 
+// DeleteEvent deletes an existing event
+//
+//	@Summary		Deletes an existing event
+//	@Description	Deletes an existing event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Success		204
+//	@Router			/api/v1/events/{id} [delete]
+//	@Security		BearerAuth
 func (app *application) deleteEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -132,6 +186,17 @@ func (app *application) deleteEvent(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// AddAttendeeToEvent adds an attendee to an event
+// @Summary		Adds an attendee to an event
+// @Description	Adds an attendee to an event
+// @Tags			attendees
+// @Accept			json
+// @Produce		json
+// @Param			id	path		int	true	"Event ID"
+// @Param			userId	path		int	true	"User ID"
+// @Success		201		{object}	database.Attendee
+// @Router			/api/v1/events/{id}/attendees/{userId} [post]
+// @Security		BearerAuth
 func (app *application) addAttendeeToEvent(c *gin.Context) {
 	eventId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -196,6 +261,16 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 	c.JSON(http.StatusCreated, attendee)
 }
 
+// GetAttendeesForEvent returns all attendees for a given event
+//
+//	@Summary		Returns all attendees for a given event
+//	@Description	Returns all attendees for a given event
+//	@Tags			attendees
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Success		200	{object}	[]database.User
+//	@Router			/api/v1/events/{id}/attendees [get]
 func (app *application) getAttendeesForEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -212,6 +287,17 @@ func (app *application) getAttendeesForEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+// DeleteAttendeeFromEvent deletes an attendee from an event
+// @Summary		Deletes an attendee from an event
+// @Description	Deletes an attendee from an event
+// @Tags			attendees
+// @Accept			json
+// @Produce		json
+// @Param			id	path		int	true	"Event ID"
+// @Param			userId	path		int	true	"User ID"
+// @Success		204
+// @Router			/api/v1/events/{id}/attendees/{userId} [delete]
+// @Security		BearerAuth
 func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -251,6 +337,16 @@ func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
 
 }
 
+// GetEventsByAttendee returns all events for a given attendee
+//
+//	@Summary		Returns all events for a given attendee
+//	@Description	Returns all events for a given attendee
+//	@Tags			attendees
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Attendee ID"
+//	@Success		200	{object}	[]database.Event
+//	@Router			/api/v1/attendees/{id}/events [get]
 func (app *application) getEventsByAttendee(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
