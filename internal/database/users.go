@@ -27,18 +27,26 @@ func(m *UserModel) Insert(user * User) error {
 }
 
 func (m *UserModel) Get(id int) (*User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
+    query := `SELECT * FROM users WHERE id = $1`
+    return m.getUser(query, id)
+}
 
-	query := `SELECT * FROM users WHERE id = $1`
+func (m *UserModel) GetByEmail(email string) (*User, error) {
+    query := `SELECT * FROM users WHERE email = $1`
+    return m.getUser(query, email)
+}
 
-	var user User
-	err := m.DB.QueryRowContext(ctx, query, id).Scan(&user.Id, &user.Email, &user.Name, &user.Password)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &user, nil
+func (m *UserModel) getUser(query string, args ...interface{}) (*User, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+    defer cancel()
+
+    var user User
+    err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.Email, &user.Name, &user.Password)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, nil
+        }
+        return nil, err
+    }
+    return &user, nil
 }
