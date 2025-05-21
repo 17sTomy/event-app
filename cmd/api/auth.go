@@ -2,6 +2,7 @@ package main
 
 import (
 	"event-api/internal/database"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -26,6 +27,7 @@ type loginResponse struct {
 }
 
 func (app *application) login(c *gin.Context) {
+	fmt.Println(">>> Login endpoint hit")
 
 	var auth loginRequest
 	if err := c.ShouldBindJSON(&auth); err != nil {
