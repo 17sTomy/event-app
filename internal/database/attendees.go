@@ -73,3 +73,43 @@ func (m AttendeeModel) GetAttendeesByEvent(eventId int) ([]User, error) {
 	}
 	return users, nil
 }
+
+func (m *AttendeeModel) Delete(userId, eventId int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `DELETE FROM attendees WHERE user_id = $1 AND event_id = $2`
+	_, err := m.DB.ExecContext(ctx, query, userId, eventId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m EventModel) GetByAttendee(attendeeId int) ([]Event, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT e.id, e.owner_id, e.name, e.description, e.date, e.location
+		FROM events e
+		JOIN attendees a ON e.id = a.event_id
+		WHERE a.user_id = $1
+	`
+	rows, err := m.DB.QueryContext(ctx, query, attendeeId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var events []Event
+	for rows.Next() {
+		var event Event
+		err := rows.Scan(&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}

@@ -88,7 +88,7 @@ func (m *EventModel) Update(event *Event) error {
 
 	query := "UPDATE events SET name = $1, description = $2, date = $3, location = $4 WHERE id = $5"
 
-	_, err := m.DB.ExecContext(ctx, query, event.Name, event.Description, event.Date, event.Location, event.Id)
+	_, err := m.DB.ExecContext(ctx, query, event.Name, event.Description, event.Date, event.Location,)
 
 	if err != nil {
 		return err
